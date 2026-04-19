@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Image to URL Converter | Free Professional Image Hosting</title>
+  <meta name="description" content="Instantly convert images to permanent, shareable URLs. Free, no registration, supports JPG, PNG, GIF, WebP up to 20MB.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://aarifalam.life/tools/image-to-url">
+  
+  <!-- Preload & Font Awesome -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" as="style">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+  <!-- Google Fonts: clean sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  
+ <style>
+  /* --------------------------------------------
+     GLOBAL RESET & ACCESSIBLE BASE
+  -------------------------------------------- */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  /* Focus styles for keyboard navigation – WCAG compliant */
+  :focus-visible {
+    outline: 3px solid #2563eb;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Inter', 'Helvetica Neue', sans-serif;
+    background: #fefce8;        /* softer warm background */
+    color: #1e1b2b;
+    line-height: 1.6;           /* increased for better readability */
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* --------------------------------------------
+     TYPOGRAPHY – BETTER CONTRAST & SCALING
+  -------------------------------------------- */
+  .hero-section {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-section h1 {
+    font-size: clamp(1.8rem, 6vw, 2.5rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, #0f2b3d, #2c3e66);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.75rem;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #e0e7ff;
+    padding: 0.4rem 1.2rem;
+    border-radius: 60px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #1e3a8a;
+    margin-bottom: 1rem;
+  }
+
+  .tagline {
+    font-size: 1.15rem;
+    color: #2d3a4b;
+    max-width: 650px;
+    margin: 0 auto;
+  }
+
+  /* --------------------------------------------
+     MAIN GRID – RESPONSIVE & CLEAN
+  -------------------------------------------- */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 860px) {
+    .main-grid {
+      grid-template-columns: 1fr;
+      gap: 1.8rem;
+    }
+    body {
+      padding: 1.2rem;
+    }
+  }
+
+  /* --------------------------------------------
+     CARDS – SOFTER, MORE CONTRAST, BETTER SHADOWS
+  -------------------------------------------- */
+  .card {
+    background: #ffffff;
+    border-radius: 32px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.02);
+    border: 1px solid #eef2f8;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-header {
+    padding: 1.5rem 1.8rem 0.2rem 1.8rem;
+    border-bottom: 1px solid #f0f3f9;
+  }
+
+  .card-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: #0f172a;
+  }
+
+  .card-title i {
+    color: #3b82f6;
+    font-size: 1.4rem;
+  }
+
+  .card-body {
+    padding: 1.6rem 1.8rem 1.8rem 1.8rem;
+  }
+
+  /* --------------------------------------------
+     UPLOAD ZONE – CLEAR, LARGE TAP TARGET
+  -------------------------------------------- */
+  .upload-zone {
+    border: 2px dashed #b9c8e6;
+    border-radius: 28px;
+    background: #fefefe;
+    text-align: center;
+    padding: 2rem 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 1.5rem;
+  }
+
+  .upload-zone:hover,
+  .upload-zone:focus-visible {
+    border-color: #2563eb;
+    background: #fafcff;
+    outline: none;
+  }
+
+  .upload-zone i {
+    font-size: 3rem;
+    color: #3b82f6;
+    margin-bottom: 0.75rem;
+  }
+
+  .upload-text {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #0f172a;
+    font-size: 1rem;
+  }
+
+  .file-hint {
+    font-size: 0.85rem;
+    color: #4a5b7a;
+    margin: 0.5rem 0 1rem;
+  }
+
+  /* --------------------------------------------
+     BUTTONS – HIGH CONTRAST & CLEAR STATES
+  -------------------------------------------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.7rem 1.5rem;
+    font-weight: 500;
+    border-radius: 60px;
+    font-size: 0.95rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #f1f5f9;
+    color: #1e293b;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: #3b82f6;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: #2563eb;
+    transform: translateY(-1px);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-outline {
+    background: white;
+    border: 1.5px solid #cbd5e1;
+  }
+
+  .btn-outline:hover {
+    background: #f8fafc;
+    border-color: #3b82f6;
+  }
+
+  /* --------------------------------------------
+     PROGRESS BAR – VISIBLE FEEDBACK
+  -------------------------------------------- */
+  .progress-container {
+    background: #e2e8f0;
+    border-radius: 40px;
+    height: 8px;
+    margin: 1rem 0 1.2rem;
+    overflow: hidden;
+    display: none;
+  }
+
+  .progress-fill {
+    width: 0%;
+    height: 100%;
+    background: #3b82f6;
+    border-radius: 40px;
+    transition: width 0.2s ease;
+  }
+
+  /* --------------------------------------------
+     PREVIEW GRID – LARGER & SCANNABLE
+  -------------------------------------------- */
+  .preview-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 1.2rem 0 0.8rem;
+    color: #1e293b;
+  }
+
+  .preview-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .preview-item {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid #e2edf7;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .preview-remove {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ef4444;
+    color: white;
+    border-radius: 30px;
+    width: 26px;
+    height: 26px;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px solid white;
+    transition: 0.1s;
+  }
+
+  .preview-remove:hover,
+  .preview-remove:focus-visible {
+    background: #b91c1c;
+    transform: scale(1.05);
+    outline: none;
+  }
+
+  /* --------------------------------------------
+     URL LIST – BETTER SPACING & READABILITY
+  -------------------------------------------- */
+  .url-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .url-item {
+    background: #fefdf8;
+    border-radius: 24px;
+    padding: 1rem 1.2rem;
+    border: 1px solid #eef2f6;
+    transition: 0.1s;
+  }
+
+  .url-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.9rem;
+  }
+
+  .url-thumb {
+    width: 56px;
+    height: 56px;
+    background: #eef2ff;
+    border-radius: 16px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .url-details {
+    flex: 1;
+    min-width: 170px;
+  }
+
+  .url-filename {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #0f172a;
+    word-break: break-word;
+  }
+
+  .url-link {
+    font-size: 0.75rem;
+    color: #2563eb;
+    word-break: break-all;
+    background: #ffffff;
+    padding: 0.25rem 0.7rem;
+    border-radius: 20px;
+    display: inline-block;
+    margin-top: 6px;
+    font-family: 'SF Mono', monospace;
+  }
+
+  .url-actions {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .icon-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0.4rem 1rem;
+    border-radius: 40px;
+    background: #ffffff;
+    color: #1f2a44;
+    transition: 0.1s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1px solid #dce3ec;
+    font-weight: 500;
+  }
+
+  .icon-btn:hover,
+  .icon-btn:focus-visible {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+    outline: none;
+  }
+
+  /* --------------------------------------------
+     EMPTY STATE – FRIENDLY & CLEAR
+  -------------------------------------------- */
+  .empty-state {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: #5a6e8c;
+  }
+
+  .empty-state i {
+    font-size: 2.8rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.7;
+  }
+
+  /* --------------------------------------------
+     FLOATING HISTORY BUTTON – ACCESSIBLE SIZE
+  -------------------------------------------- */
+  .floating-history {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: #ffffff;
+    width: 56px;
+    height: 56px;
+    border-radius: 60px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 1px solid #eef2ff;
+    transition: 0.2s;
+    z-index: 100;
+  }
+
+  .floating-history i {
+    font-size: 1.6rem;
+    color: #1f2a48;
+  }
+
+  .floating-history:hover,
+  .floating-history:focus-visible {
+    background: #3b82f6;
+    transform: scale(1.02);
+    outline: none;
+  }
+
+  .floating-history:hover i,
+  .floating-history:focus-visible i {
+    color: white;
+  }
+
+  /* --------------------------------------------
+     MODAL – CLEAR HIERARCHY & FOCUS TRAP
+  -------------------------------------------- */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal-card {
+    background: white;
+    max-width: 600px;
+    width: 90%;
+    border-radius: 36px;
+    padding: 1.8rem;
+    box-shadow: 0 30px 45px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.2rem;
+  }
+
+  .modal-header h3 {
+    font-weight: 700;
+    font-size: 1.4rem;
+  }
+
+  .close-modal {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #4b5565;
+    padding: 0 8px;
+  }
+
+  .close-modal:hover,
+  .close-modal:focus-visible {
+    color: #1e293b;
+    outline: none;
+  }
+
+  .history-list {
+    max-height: 420px;
+    overflow-y: auto;
+  }
+
+  .history-item {
+    background: #fafcff;
+    padding: 1rem;
+    border-radius: 24px;
+    margin-bottom: 0.8rem;
+    font-size: 0.85rem;
+    border: 1px solid #eef2f8;
+  }
+
+  /* --------------------------------------------
+     TOAST & NOTIFICATIONS – FRIENDLY ALERTS
+  -------------------------------------------- */
+  .toast-message {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e293b;
+    color: white;
+    padding: 0.8rem 1.6rem;
+    border-radius: 60px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+  }
+
+  .limits-toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    background: #1e293b;
+    color: #ffffff;
+    padding: 18px;
+    border-radius: 20px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+    border-left: 5px solid #f97316;
+    z-index: 9999;
+    animation: slideIn 0.3s ease;
+    min-width: 240px;
+    font-weight: 500;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideOut {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  /* --------------------------------------------
+     PROCESSING INDICATOR – SUBTLE FEEDBACK
+  -------------------------------------------- */
+  .processing {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .processing::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.08), transparent);
+    animation: processing 1.5s infinite;
+    pointer-events: none;
+  }
+
+  @keyframes processing {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+
+  /* --------------------------------------------
+     FOOTER – CLEAN AND LEGIBLE
+  -------------------------------------------- */
+  .simple-footer {
+    margin-top: 3rem;
+    text-align: center;
+    padding: 1.5rem 0.5rem;
+    border-top: 1px solid #e2e8f0;
+    font-size: 0.85rem;
+    color: #4a5b7a;
+  }
+
+  .simple-footer a {
+    color: #2563eb;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    margin: 0 0.2rem;
+  }
+
+  .simple-footer a:hover {
+    color: #1d4ed8;
+  }
+
+  /* small responsive touches */
+  @media (max-width: 540px) {
+    .card-body {
+      padding: 1.2rem;
+    }
+    .btn {
+      padding: 0.6rem 1rem;
+      font-size: 0.85rem;
+    }
+    .floating-history {
+      bottom: 1rem;
+      right: 1rem;
+      width: 48px;
+      height: 48px;
+    }
+    .preview-item {
+      width: 72px;
+      height: 72px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="hero-section">
+    <div class="badge">
+      <i class="fas fa-link"></i> Instant URL · No Signup
+    </div>
+    <h1>Image to URL Converter</h1>
+    <p class="tagline">Upload images, get permanent shareable links. Fast, private & free.</p>
+  </div>
+
+  <div class="main-grid">
+    <!-- left: upload card -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fas fa-cloud-upload-alt"></i> Upload Images
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="upload-zone" id="dropZone">
+          <i class="fas fa-image"></i>
+          <p class="upload-text">Drag & drop or click to browse</p>
+          <div class="file-hint">JPG, PNG, GIF, WebP · Max 20MB each</div>
+          <input type="file" id="fileInput" accept="image/jpeg,image/png,image/gif,image/webp" multiple style="display: none;">
+          <button class="btn btn-outline" id="browseBtn" type="button"><i class="fas fa-folder-open"></i> Choose files</button>
+        </div>
+
+        <div class="progress-container" id="progressContainer">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <button class="btn btn-primary" id="uploadBtn" style="width: 100%; margin-top: 0.5rem;" disabled>
+          <i class="fas fa-link"></i> Generate URLs
+        </button>
+
+        <div class="preview-title" id="previewHeading" style="display: none;"><i class="fas fa-th"></i> Preview (<span id="previewCount">0</span>)</div>
+        <div id="previewGrid" class="preview-grid"></div>
+      </div>
+    </div>
+
+    <!-- right: generated URLs card -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fas fa-link"></i> Generated URLs
+        </div>
+      </div>
+      <div class="card-body" id="urlsContainer">
+        <div class="empty-state">
+          <i class="fas fa-globe"></i>
+          <p>No URLs generated yet. Upload and generate.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="simple-footer">
+    <p>© 2025 AarifAlam.Life | <a href="https://aarifalam.life/tools/image-to-url">Go to Official site</a> · <a href="https://aarifalam.life/footer/contact-us/contact">Contact</a> · <a href="dash-img-url.html">Dashboard</a></p>
+    <p style="margin-top: 0.3rem; font-size:0.7rem">Free image hosting — share links anywhere</p>
+  </div>
+</div>
+
+<div class="floating-history" id="historyBtn">
+  <i class="fas fa-clock"></i>
+</div>
+
+<div id="historyModal" class="modal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3><i class="fas fa-history"></i> URL History</h3>
+      <button class="close-modal" id="closeModalBtn">&times;</button>
+    </div>
+    <div id="historyList" class="history-list">
+      <div class="empty-state" style="padding:1rem">No history yet</div>
+    </div>
+  </div>
+</div>
+
+<div id="toastMsg" class="toast-message">
+  <i class="fas fa-check-circle"></i> <span id="toastText">Copied!</span>
+</div>
+
+<!-- Main JavaScript will be included in Part 2 -->
+<script src="img-url.js"></script>
+</body>
+</html>

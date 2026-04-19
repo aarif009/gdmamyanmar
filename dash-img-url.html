@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudinary Image Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 24px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-box h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-box .number {
+            color: #333;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        
+        .controls {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .image-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            position: relative;
+        }
+        
+        .image-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .image-card.selected {
+            border: 3px solid #007bff;
+        }
+        
+        .image-checkbox {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .image-preview {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+        
+        .image-info {
+            padding: 10px;
+        }
+        
+        .image-name {
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 8px;
+            word-break: break-all;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .image-meta {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .image-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .image-actions button {
+            flex: 1;
+            padding: 6px;
+            font-size: 11px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .page-btn {
+            padding: 8px 15px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .page-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            display: block;
+            animation: slideIn 0.3s;
+        }
+        
+        .toast.success {
+            background: #28a745;
+        }
+        
+        .toast.error {
+            background: #dc3545;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .modal-content h3 {
+            margin-bottom: 20px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📸 Cloudinary Image Dashboard</h1>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-primary" onclick="loadImages()">
+                    🔄 Refresh
+                </button>
+                <button class="btn-danger" onclick="deleteSelected()" id="deleteSelectedBtn" disabled>
+                    🗑️ Delete Selected (<span id="selectedCount">0</span>)
+                </button>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <h3>Total Images</h3>
+                <div class="number" id="totalImages">0</div>
+            </div>
+            <div class="stat-box">
+                <h3>Total Size</h3>
+                <div class="number" id="totalSize">0 MB</div>
+            </div>
+            <div class="stat-box">
+                <h3>Today's Uploads</h3>
+                <div class="number" id="todayUploads">0</div>
+            </div>
+            <div class="stat-box">
+                <h3>This Month</h3>
+                <div class="number" id="monthUploads">0</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Search by filename...">
+            </div>
+            <select id="filterSelect">
+                <option value="all">All Images</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+            </select>
+            <select id="sortSelect">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="name">Name A-Z</option>
+                <option value="size">Largest First</option>
+            </select>
+            <button class="btn-success" onclick="selectAll()">
+                ✅ Select All
+            </button>
+        </div>
+        
+        <div id="imageGrid" class="image-grid">
+            <div class="loading">Loading images...</div>
+        </div>
+        
+        <div id="pagination" class="pagination"></div>
+    </div>
+    
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3>Confirm Delete</h3>
+            <p id="modalMessage">Are you sure you want to delete these images?</p>
+            <div class="modal-actions">
+                <button onclick="closeModal()">Cancel</button>
+                <button class="btn-danger" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // CONFIGURATION - CHANGE THIS TO YOUR WORKER URL
+        const WORKER_URL = 'https://dash-img-to-url01.aarifbabu8948.workers.dev'; // ⚠️ CHANGE THIS!
+        
+        let state = {
+            allImages: [],
+            filteredImages: [],
+            selectedImages: new Set(),
+            currentPage: 1,
+            itemsPerPage: 20,
+            nextCursor: null,
+            loading: false
+        };
+        
+        // Load images from worker
+        async function loadImages(cursor = null) {
+            if (state.loading) return;
+            
+            state.loading = true;
+            document.getElementById('imageGrid').innerHTML = '<div class="loading">Loading images...</div>';
+            
+            try {
+                let url = `${WORKER_URL}/images`;
+                if (cursor) {
+                    url += `?cursor=${cursor}`;
+                }
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.resources) {
+                    const newImages = data.resources.map(img => ({
+                        id: img.public_id,
+                        url: img.secure_url,
+                        name: img.public_id.split('/').pop(),
+                        fullName: img.public_id,
+                        size: img.bytes,
+                        format: img.format,
+                        width: img.width,
+                        height: img.height,
+                        timestamp: new Date(img.created_at).getTime(),
+                        created: img.created_at
+                    }));
+                    
+                    if (cursor) {
+                        state.allImages = [...state.allImages, ...newImages];
+                    } else {
+                        state.allImages = newImages;
+                    }
+                    
+                    state.nextCursor = data.next_cursor;
+                    
+                    // Load more if available
+                    if (state.nextCursor) {
+                        await loadImages(state.nextCursor);
+                    } else {
+                        updateStats();
+                        applyFilters();
+                        showToast(`Loaded ${state.allImages.length} images`, 'success');
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('imageGrid').innerHTML = `
+                    <div class="loading">
+                        ❌ Failed to load images<br>
+                        <small>${error.message}</small><br>
+                        <button onclick="loadImages()" style="margin-top: 20px;">Try Again</button>
+                    </div>
+                `;
+                showToast('Failed to load images', 'error');
+            } finally {
+                state.loading = false;
+            }
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+            
+            let totalSize = 0;
+            let todayCount = 0;
+            let monthCount = 0;
+            
+            state.allImages.forEach(img => {
+                totalSize += img.size || 0;
+                if (img.timestamp >= today) todayCount++;
+                if (img.timestamp >= monthStart) monthCount++;
+            });
+            
+            document.getElementById('totalImages').textContent = state.allImages.length;
+            document.getElementById('totalSize').textContent = formatBytes(totalSize);
+            document.getElementById('todayUploads').textContent = todayCount;
+            document.getElementById('monthUploads').textContent = monthCount;
+        }
+        
+        // Apply filters and search
+        function applyFilters() {
+            let filtered = [...state.allImages];
+            
+            // Date filter
+            const filter = document.getElementById('filterSelect').value;
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            
+            if (filter === 'today') {
+                filtered = filtered.filter(img => img.timestamp >= today);
+            } else if (filter === 'yesterday') {
+                const yesterday = today - 86400000;
+                filtered = filtered.filter(img => img.timestamp >= yesterday && img.timestamp < today);
+            } else if (filter === 'week') {
+                const weekAgo = today - (7 * 86400000);
+                filtered = filtered.filter(img => img.timestamp >= weekAgo);
+            } else if (filter === 'month') {
+                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+                filtered = filtered.filter(img => img.timestamp >= monthStart);
+            }
+            
+            // Search filter
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (searchTerm) {
+                filtered = filtered.filter(img => 
+                    img.name.toLowerCase().includes(searchTerm) ||
+                    img.fullName.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Sort
+            const sort = document.getElementById('sortSelect').value;
+            filtered.sort((a, b) => {
+                switch(sort) {
+                    case 'newest': return b.timestamp - a.timestamp;
+                    case 'oldest': return a.timestamp - b.timestamp;
+                    case 'name': return a.name.localeCompare(b.name);
+                    case 'size': return (b.size || 0) - (a.size || 0);
+                    default: return 0;
+                }
+            });
+            
+            state.filteredImages = filtered;
+            state.currentPage = 1;
+            renderGrid();
+        }
+        
+        // Render image grid
+        function renderGrid() {
+            const grid = document.getElementById('imageGrid');
+            const start = (state.currentPage - 1) * state.itemsPerPage;
+            const end = start + state.itemsPerPage;
+            const pageImages = state.filteredImages.slice(start, end);
+            
+            if (pageImages.length === 0) {
+                grid.innerHTML = '<div class="loading">No images found</div>';
+                return;
+            }
+            
+            grid.innerHTML = pageImages.map(img => {
+                const isSelected = state.selectedImages.has(img.id);
+                return `
+                    <div class="image-card ${isSelected ? 'selected' : ''}">
+                        <input type="checkbox" 
+                               class="image-checkbox" 
+                               ${isSelected ? 'checked' : ''}
+                               onclick="toggleSelect('${img.id}', event)">
+                        <img src="${img.url}" alt="${img.name}" class="image-preview" loading="lazy">
+                        <div class="image-info">
+                            <div class="image-name" title="${img.fullName}">${img.name}</div>
+                            <div class="image-meta">
+                                <div>📅 ${formatDate(img.timestamp)}</div>
+                                <div>📦 ${formatBytes(img.size)}</div>
+                                <div>📐 ${img.width || 0}x${img.height || 0}</div>
+                            </div>
+                            <div class="image-actions">
+                                <button onclick="copyUrl('${img.url}')">📋 Copy</button>
+                                <button onclick="window.open('${img.url}')">👁️ View</button>
+                                <button class="btn-danger" onclick="deleteImage('${img.id}')">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            renderPagination();
+            updateSelectedCount();
+        }
+        
+        // Render pagination
+        function renderPagination() {
+            const totalPages = Math.ceil(state.filteredImages.length / state.itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= state.currentPage - 2 && i <= state.currentPage + 2)) {
+                    html += `<button class="page-btn ${i === state.currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                } else if (i === state.currentPage - 3 || i === state.currentPage + 3) {
+                    html += '<span style="padding: 8px;">...</span>';
+                }
+            }
+            
+            pagination.innerHTML = html;
+        }
+        
+        // Toggle selection
+        function toggleSelect(id, event) {
+            event.stopPropagation();
+            
+            if (state.selectedImages.has(id)) {
+                state.selectedImages.delete(id);
+            } else {
+                state.selectedImages.add(id);
+            }
+            
+            renderGrid();
+        }
+        
+        // Select all visible
+        function selectAll() {
+            const start = (state.currentPage - 1) * state.itemsPerPage;
+            const end = start + state.itemsPerPage;
+            const pageImages = state.filteredImages.slice(start, end);
+            
+            const allSelected = pageImages.every(img => state.selectedImages.has(img.id));
+            
+            if (allSelected) {
+                pageImages.forEach(img => state.selectedImages.delete(img.id));
+            } else {
+                pageImages.forEach(img => state.selectedImages.add(img.id));
+            }
+            
+            renderGrid();
+        }
+        
+        // Update selected count
+        function updateSelectedCount() {
+            const count = state.selectedImages.size;
+            document.getElementById('selectedCount').textContent = count;
+            document.getElementById('deleteSelectedBtn').disabled = count === 0;
+        }
+        
+        // Delete single image
+        async function deleteImage(id) {
+            const image = state.allImages.find(img => img.id === id);
+            if (!image) return;
+            
+            if (!confirm(`Delete "${image.name}"?`)) return;
+            
+            try {
+                const response = await fetch(`${WORKER_URL}/delete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ publicId: id })
+                });
+                
+                if (response.ok) {
+                    state.allImages = state.allImages.filter(img => img.id !== id);
+                    state.selectedImages.delete(id);
+                    applyFilters();
+                    updateStats();
+                    showToast('Image deleted', 'success');
+                } else {
+                    throw new Error('Delete failed');
+                }
+            } catch (error) {
+                showToast('Failed to delete image', 'error');
+            }
+        }
+        
+        // Delete selected images
+        async function deleteSelected() {
+            const count = state.selectedImages.size;
+            if (count === 0) return;
+            
+            if (!confirm(`Delete ${count} selected images?`)) return;
+            
+            try {
+                const publicIds = Array.from(state.selectedImages);
+                
+                const response = await fetch(`${WORKER_URL}/delete-multiple`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ publicIds })
+                });
+                
+                if (response.ok) {
+                    state.allImages = state.allImages.filter(img => !state.selectedImages.has(img.id));
+                    state.selectedImages.clear();
+                    applyFilters();
+                    updateStats();
+                    showToast(`${count} images deleted`, 'success');
+                } else {
+                    throw new Error('Delete failed');
+                }
+            } catch (error) {
+                showToast('Failed to delete images', 'error');
+            }
+        }
+        
+        // Utility functions
+        function formatBytes(bytes) {
+            if (!bytes) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+            if (diff < 604800000) return `${Math.floor(diff / 86400000)}d ago`;
+            
+            return date.toLocaleDateString();
+        }
+        
+        function goToPage(page) {
+            state.currentPage = page;
+            renderGrid();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function copyUrl(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('URL copied!', 'success');
+            });
+        }
+        
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('filterSelect').addEventListener('change', applyFilters);
+        document.getElementById('sortSelect').addEventListener('change', applyFilters);
+        
+        // Initialize
+        loadImages();
+    </script>
+</body>
+</html>
